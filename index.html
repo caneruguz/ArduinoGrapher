@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>arduino.js: JavaScript-to-Arduino I/O control interface</title>
+
+<!-- core library -->
+<script src="script/arduino.js"></script>
+
+<!-- demo app, you can remove this.. -->
+<script src="demo/demo.js"></script>
+
+<link rel="stylesheet" media="screen" href="style.css" />
+<link rel="stylesheet" media="screen" href="demo/demo.css" />
+
+<!-- Flot material here -->
+	<!--[if lte IE 8]><script language="javascript" type="text/javascript" src="../excanvas.min.js"></script><![endif]-->
+	<script type="text/javascript" src="http://www.google.com/jsapi"></script>
+	<script type="text/javascript">google.load("jquery", "1.7.1");</script>
+	<script language="javascript" type="text/javascript" src="flot/jquery.flot.js"></script>
+
+<script>
+
+// arduino.js: crash-course intro (config/setup for your own use)
+
+// specify where to find the flash (used for socket connection and control protocol)
+arduino.config.flash.url = 'swf/arduinojs.swf';
+
+// enable debugging to JS console (useful when prototyping)
+//arduino.config.debug.enabled = true;
+
+// include flash-based debug console messages
+//arduino.config.flash.debug = true;
+
+// true = show flash UI on-screen (good for initial set-up / troubleshooting)
+arduino.config.flash.showUI = false;
+
+// fallback: allow fake connections if socket fails, for testing offline etc.
+arduino.config.debug.offlineMode = true;
+
+// finally, connect when flash has loaded.
+// demo.js sets its own handlers, but here is a basic example:
+
+//Get and spit out the data from Arduino per 1ms
+
+
+
+
+
+
+</script>
+
+
+
+
+</head>
+
+<body>
+<div id="header">
+	<div class="wrapper"> 
+<div id="logo"> </div> <h1>Arduino Grapher </h1>
+<h4 id="tagline"> Create real-time visualizations from your Arduino </h4>
+	</div> <!-- ends .wrapper -->	
+</div>
+
+<div id="headermenu">
+	<div class="wrapper"> 	
+		<ul>
+			<li><a href="">Home</a></li>
+			<li><a href="" class="active">Graph it!</a></li>
+			<li><a href="">Help & Tutorials</a></li>
+			<li><a href="">Credits</a></li>
+		</ul>
+	</div> <!-- ends .wrapper -->
+</div>
+
+
+<div id="content">
+	<div class="wrapper"> 
+
+ <h3>Connect to Arduino</h3>
+ <p>Once you have set up your Arduino to work with your computer's serial port click on the button below to start getting data from your Arduino pins. If you need assistance on this step please see our help page.</p>
+<div id="device-status">
+  <p id="device-status-text"><button id="do-connect" onclick="startArduinoDemo()" title="Attempt to connect to an arduino device via socks/serial proxy" disabled="disabled">Connect</button>
+   <p>
+     <button id="timein">Start graphing</button>
+    <button id="timeout">Stop graphing</button>
+    Choose Source Pin
+    <select id="pinSource">
+<option value="Analog-0">Analog-0</option>
+<option value="Analog-1">Analog-1</option>
+<option value="Analog-2">Analog-2</option>
+<option value="Analog-3">Analog-3</option>
+<option value="Analog-4">Analog-4</option>
+<option value="Analog-5">Analog-5</option>
+<option value="Digital-2">Digital-2</option>
+<option value="Digital-3">Digital-3</option>
+<option value="Digital-4">Digital-4</option>
+<option value="Digital-5">Digital-5</option>
+<option value="Digital-6">Digital-6</option>
+<option value="Digital-7">Digital-7</option>
+<option value="Digital-8">Digital-8</option>
+<option value="Digital-9">Digital-9</option>
+<option value="Digital-10">Digital-10</option>
+<option value="Digital-11">Digital-11</option>
+<option value="Digital-12">Digital-12</option>
+<option value="Digital-13">Digital-13</option>
+</select>
+   </p>  
+     
+  </p>
+  
+ </div>
+
+
+
+    <h3>Line Chart</h3>
+
+    <div id="placeholder" style="width:600px;height:300px;"></div>
+
+    <p>This chart automatically shows the data from your Arduino when it connects. If you can't see any changes please check our Help and Troubleshooting page.</p>
+
+<p>Collect Data every: <input id="updateInterval" type="text" value="" style="text-align: right; width:5em"> milliseconds</p>
+ <p>Update graph every: <input id="graphInterval" type="text" value="" style="text-align: right; width:5em"> milliseconds</p>
+ <p>Data points shown: <input id="dataPoints" type="text" value="" style="text-align: right; width:5em">.</p>
+
+
+
+
+<script type="text/javascript">
+
+
+$(function () {
+	
+	
+    // we use an inline data source in the example, usually data would
+    // be fetched from a server
+    var data = [], totalPoints = 20;
+    var allData = new Array;
+	var update;
+	var collectData;
+	var startgraph = false;
+	var pinSource = 'Analog-0';
+	var pinSplit = ['Analog', 0];
+	var pinNumber = pinSplit[1];
+	var graphInterval = 40;
+	
+		$("#pinSource").val(pinSource).change(function () {
+			pinSource = $("#pinSource").val(); 
+			pinSplit = pinSource.split("-");
+			pinNumber = parseInt(pinSplit[1]);
+//			if (pinSplit[0] == 'Analog'){
+//				 ArduinoPin = arduino.getAnalogData(pinNumber);
+//				 
+//			} else {
+//				 ArduinoPin = arduino.getDigitalData(pinNumber);
+//			}
+	  });
+    
+ 
+ 		$("#dataPoints").val(totalPoints).change(function () {
+			if($("#dataPoints").val().length !== 0){
+						totalPoints = parseInt($("#dataPoints").val()); //Get MinRange value from form
+						
+						
+			}
+		  }); 
+    
+    function collectData() {
+ 		if (data.length > 0)
+            	data = data.slice(1);
+           
+           
+           while (data.length < totalPoints) {
+			if (pinSplit[0] == 'Analog'){
+				 y = arduino.getAnalogData(pinNumber);
+				 
+			} else {
+				 y = arduino.getDigitalData(pinNumber);
+			}
+           data.push(y);
+           }
+           
+            
+            allData.push(y);
+
+        // zip the generated y values with the x values
+        var res = [];
+        for (var i = 0; i < data.length; ++i) {
+            if (i > totalPoints) {
+            	res.shift();
+            }
+            res.push([i, data[i]]);
+            
+            }
+        return res;
+    	
+    }
+    	
+
+    // setup control widget
+    var updateInterval = 1;
+    $("#updateInterval").val(updateInterval).change(function () {
+        var v = $(this).val();
+        if (v && !isNaN(+v)) {
+            updateInterval = +v;
+            if (updateInterval < 1)
+                updateInterval = 1;
+            if (updateInterval > 2000)
+                updateInterval = 2000;
+            $(this).val("" + updateInterval);
+        }
+    });
+
+		var minRange = 0;
+		var maxRange = 1050;
+		// setup plot
+		    var options = {
+		        series: { shadowSize: 0 }, // drawing is faster without shadows
+		        yaxis: { min: minRange, max: maxRange },
+		        xaxis: { show: false }
+		    };
+		    
+
+
+		  		
+		
+		$("#minRange").val(minRange).change(function () {
+			if($("#minRange").val().length !== 0){
+						minRange = $("#minRange").val(); //Get MinRange value from form
+						
+						
+			}
+		  });
+		
+		
+		$("#maxRange").val(maxRange).change(function () {
+			if($("#maxRange").val().length !== 0){
+						maxRange = $("#maxRange").val(); //Get MaxRange value from form
+						 
+			}
+	  	});
+
+	$("#timeout").click(function() {
+	  startgraph = false;
+	  $('#timeout').attr('disabled', 'disabled');
+	  	  $('#timein').removeAttr('disabled');
+	  
+	});
+	
+	$("#timein").click(function() {
+	  startgraph = true;
+	  $('#timein').attr('disabled', 'disabled');
+	  	  $('#timeout').removeAttr('disabled');
+	    update();
+	});
+
+    
+	var plot = $.plot($("#placeholder"), [ data ], options);   
+
+	function getData() {
+		plot.setData([ collectData() ]);
+		setTimeout(getData, updateInterval);
+		//console.log('update interval: ' + updateInterval);
+	}
+	
+  	    $("#graphInterval").val(graphInterval).change(function () {
+			if($("#graphInterval").val().length !== 0){
+						graphInterval = $("#graphInterval").val(); //Get graphInterval value from form		
+			}
+		});
+	
+    function update() {
+		plot = $.plot($("#placeholder"), [ collectData() ], options);
+        // since the axes don't change, we don't need to call plot.setupGrid()
+        	plot.draw();
+        if (startgraph == true) {
+        	setTimeout(update, graphInterval);
+        };
+       
+    }
+    getData();
+    update();
+});
+
+</script>
+
+ <div id="pins" class="column-wrapper">
+
+  <div class="column">
+
+   <h2><span>Analog Inputs</span></h2>
+   <ul>
+    <li>A<sub>in0</sub>: <span id="analog-pin0-value"> </span></li>
+    <li>A<sub>in1</sub>: <span id="analog-pin1-value"> </span></li>
+    <li>A<sub>in2</sub>: <span id="analog-pin2-value"> </span></li>
+    <li>A<sub>in3</sub>: <span id="analog-pin3-value"> </span></li>
+    <li>A<sub>in4</sub>: <span id="analog-pin4-value"> </span></li>
+    <li>A<sub>in5</sub>: <span id="analog-pin5-value"> </span></li>
+   </ul>
+	
+   <div id="canvas-box">
+    <canvas id="arduino-canvas" width="256" height="336">This is a &lt;canvas&gt; element. You need a better browser to see the data visualization.</canvas>
+   </div>
+
+   <p>
+    <button onclick="window.clearTimeout(arduinoTimer);arduinoTimer=null;this.disabled='disabled'">Stop updating</button>
+   </p>
+
+   <p>Apply variable current to the analog inputs (eg. a potentiometer) to see live graphs.</p>
+
+  </div>
+
+  <div class="column">
+
+   <h2><span>Standard I/O Pins</span></h2>
+   <ul>
+    <li>Pin 2 <span id="pin2-value"> </span> <span id="pin2-button"></span></li>
+    <li>Pin 3 <span id="pin3-value"> </span> <span id="pin3-button"></span></li>
+    <li>Pin 4 <span id="pin4-value"> </span> <span id="pin4-button"></span></li>
+    <li>Pin 5 <span id="pin5-value"> </span> <span id="pin5-button"></span></li>
+    <li>Pin 6 <span id="pin6-value"> </span> <span id="pin6-button"></span></li>
+    <li>Pin 7 <span id="pin7-value"> </span> <span id="pin7-button"></span></li>
+    <li>Pin 8 <span id="pin8-value"> </span> <span id="pin8-button"></span></li>
+    <li>Pin 9 <span id="pin9-value"> </span> <span id="pin9-button"></span></li>
+    <li>Pin 10 <span id="pin10-value"> </span> <span id="pin10-button"></span></li>
+    <li>Pin 11 <span id="pin11-value"> </span> <span id="pin11-button"></span></li>
+    <li>Pin 12 <span id="pin12-value"> </span> <span id="pin12-button"></span></li>
+    <li>Pin 13 <span id="pin13-value"> </span> <span id="pin13-button"></span></li>
+   </ul>
+
+   <h2 style="margin-top:1.5em"><span>Pin 13/LED Blink Test</span></h2>
+   <p>Pin 13 typically has a surface-mount LED (eg. as with the Uno) representing binary output.</p>
+   <p>Interval (msec): &nbsp;<input id="blink-interval" type="text" value="1000" style="width:5em" /></p>
+
+  </div>
+ 
+</div>
+</div>
+<div id="footer">
+<div class="wrapper">
+	<p> A project of Curry School of Education, University of Virginia</p>
+</div>
+</div>
+
+
+</body>
+</html>

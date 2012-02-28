@@ -1,0 +1,84 @@
+ body {
+	 color: #333;
+	 margin: 0px;
+	 font-family: "Helvetica Neue", Helvetica, verdana, arial, tahoma, "sans-serif";
+ }
+
+#header {
+	background: #85a8c5 url(images/texture_1.png);
+	margin:0px;
+	padding: 20px 0;
+	height: 140px;
+}
+
+h3 {
+	padding-top: 20px;
+}
+
+.wrapper {
+	margin: 0 auto;
+	width: 768px;
+}
+
+#logo { /*has the logo in the header  */
+	background: transparent url(images/graphlogo.png) no-repeat top center;
+	width: 128px;
+	height: 128px;
+ 	float: left;
+}
+
+#header h1, #header h4 {
+	text-shadow: 2px 2px 2px #505050;
+	letter-spacing: 1px;
+	margin-left: 150px;
+	color: #eee;
+}
+
+#headermenu {
+	height: 44px;
+	background: #eee; // url(images/project_papper.png) repeat;
+	margin: -20px;
+	border-bottom: 1px solid #ccc;
+		border-top: 1px solid #999;
+}
+
+#headermenu ul {
+	margin-top: -5px;
+}
+
+#headermenu ul li a {
+	padding: 8px 15px 12px 15px;
+	font-size: 16px;
+	text-transform: none;
+	text-decoration: none;
+	color: teal;
+	text-align: left;
+	line-height: 20px;
+}
+
+#headermenu ul li a.active {
+	background: url(images/uparrow.png) bottom center no-repeat;
+}
+	
+#headermenu ul li {
+	display: block;
+	float: left;
+	list-style-type: none;
+	padding: 5px 10px;	
+}
+
+#footer {
+	background: #eee url(images/project_papper.png) repeat;
+	padding: 20px 0;
+	margin: 0;
+	border-top: 1px solid #999;
+}
+
+#content {
+	border-top: 1px solid #eee;
+}
+
+#arduinodata {
+	height: 200px;
+	overflow: hidden;
+}
