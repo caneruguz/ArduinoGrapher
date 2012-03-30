@@ -1,0 +1,20 @@
+This project is allows for two-way communication between a browser
+and an ARDUINO (www.arduino.cc) microcontroller.  Thanks to Scott
+Schiller (www.schillmania.com) for developing arduino.js, which in
+turn uses as3glue (code.google.com/p/as3glue) for the Flash
+component, and also serproxy (see arduino.cc/playground/
+Interfacing/SerialNet) for details.
+
+So far this project includes a graphing front end using the flot 
+(code.google.com/p/flot/) JavaScript library.
+
+Directions for setup include:
+
+- run the StandardFirmata on the Arduino
+- plug in the Arduino via USB port
+- start serproxy
+- make sure Flash settings accept the directory where this code is
+- open index.html
+
+With all of these pieces in place, you can graph data from the 
+Arduino in realtime.
