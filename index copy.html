@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Arduino Grapher</title>
+
+
+
+<link rel="stylesheet" media="screen" href="style.css" />
+
+<!-- Flot material here -->
+	<!--[if lte IE 8]><script language="javascript" type="text/javascript" src="../excanvas.min.js"></script><![endif]-->
+	
+	
+	<!-- This section is from Concord.org, see this blog post: https://blog.concord.org/streaming-arduino-data-to-a-browser -->
+	<script type="text/javascript" src="ArduinoEthernetCom.js"></script>
+     <script>
+      window.onload = function() {
+        
+        var aec  = new ArduinoEthernetCom( {frequency: 10} );
+        var result = [];
+        var yCounter = 1; 
+        var res = [];
+        
+        // setup plot
+    var options = {
+        series: { shadowSize: 0 }, // drawing is faster without shadows
+        yaxis: { min: 0, max: 1024 },
+        xaxis: { show: false }
+    };
+    var plot = $.plot($("#placeholder"), [ res ], options);
+    
+   
+  
+   aec.addObserver(function(data) {
+          var a0 = data.A0;
+          document.getElementById('a0val').innerHTML = a0;
+
+            var y = a0;
+            console.log(a0);
+            result.push(y);       
+        
+        res.push([yCounter, y])
+        console.log('y Counter ' + yCounter);
+   
+    yCounter++; 
+    
+    plot = $.plot($("#placeholder"), [ res ], options);
+
+   
+      result.shift();
+      res.shift();
+    
+        
+        document.getElementById('array').innerHTML = result[0];
+
+        });
+        
+        document.getElementById('do-connect').onclick = function() {
+          aec.start();
+        }
+      }
+    </script>
+    
+	
+	
+	<script type="text/javascript" src="http://www.google.com/jsapi"></script>
+	<script type="text/javascript">google.load("jquery", "1.7.1");</script>
+	<script language="javascript" type="text/javascript" src="flot/jquery.flot.js"></script>
+
+</head>
+
+<body>
+<div id="header">
+	<div class="wrapper"> 
+<div id="logo"> </div> <h1>Arduino Grapher </h1>
+<h4 id="tagline"> Create real-time visualizations from your Arduino </h4>
+	</div> <!-- ends .wrapper -->	
+</div>
+
+<div id="headermenu">
+	<div class="wrapper"> 	
+		<ul>
+			<li><a href="">Home</a></li>
+			<li><a href="" class="active">Graph it!</a></li>
+			<li><a href="">Help & Tutorials</a></li>
+			<li><a href="">Credits</a></li>
+		</ul>
+	</div> <!-- ends .wrapper -->
+</div>
+
+
+<div id="content">
+	<div class="wrapper"> 
+
+ <h3>Connect to Arduino</h3>
+ <p>Once you have set up your Arduino to work with your computer's serial port click on the button below to start getting data from your Arduino pins. If you need assistance on this step please see our help page.</p>
+<div id="device-status">
+  <p id="device-status-text"><button id="do-connect">Connect</button>
+    <div style="padding: 15px;">
+      Pin A0's value: <span id="a0val">&mdash;</span>
+    </div>
+  
+  <div id="array">Array here</div>
+   <p>
+     <button id="timein">Start graphing</button>
+    <button id="timeout">Stop graphing</button>
+    Choose Source Pin
+    <select id="pinSource">
+<option value="a0">Analog-0</option>
+<option value="a1">Analog-1</option>
+<option value="a2">Analog-2</option>
+<option value="a3">Analog-3</option>
+<option value="a4">Analog-4</option>
+<option value="a5">Analog-5</option>
+<option value="d2">Digital-3</option>
+<option value="d3">Digital-4</option>
+<option value="d4">Digital-5</option>
+<option value="d5">Digital-6</option>
+<option value="d6">Digital-7</option>
+<option value="d7">Digital-8</option>
+<option value="d8">Digital-9</option>
+<option value="d9">Digital-10</option>
+<option value="d10">Digital-11</option>
+<option value="d11">Digital-12</option>
+<option value="d12">Digital-13</option>
+<option value="d13">Digital-13</option>
+</select>
+   </p>  
+     
+  </p>
+  
+ </div>
+
+
+
+    <h3>Line Chart</h3>
+
+    <div id="placeholder" style="width:600px;height:300px;"></div>
+
+    <p>This chart automatically shows the data from your Arduino when it connects. If you can't see any changes please check our Help and Troubleshooting page.</p>
+
+
+ <p>Update graph every: <input id="graphUpdate" type="text" value="" style="text-align: right; width:5em"> milliseconds</p>
+ <p>Data points shown: <input id="dataPoints" type="text" value="" style="text-align: right; width:5em">.</p>
+
+
+
+
+
+
+ 
+ 
+</div>
+</div>
+</div>
+<div id="footer">
+<div class="wrapper">
+	<p> A project of Curry School of Education, University of Virginia</p>
+</div>
+</div>
+
+
+</body>
+</html>
